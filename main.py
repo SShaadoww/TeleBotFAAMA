@@ -4,7 +4,7 @@ import Config
 import DataBase
 
 bot = telebot.TeleBot(Config.token)
-
+Support = "@queenstealer"
 
 # Функция на команды /start, выводит кнопки: "Поддержка", "Каталог"
 
@@ -30,6 +30,18 @@ def text(message):
         back = types.KeyboardButton("Назад")
         markup.add(doors, drips, basket, back)
         bot.send_message(message.chat.id, text="Выберете интересующий вас товар.", reply_markup=markup)
+
+    elif (message.text == "Поддержка"):
+        bot.send_message(message.chat.id, text="Включён режим поддержки, все последующие сообщения будут видны специалисту поддержки\n"
+                                               "Поддержка работает с 8 до 8 по мск\n"
+                                               "Время ответа до 1 часа")
+        bot.send_message(message.chat.id, "")
+        userId = message.chat.username
+        DataBase.CheckCustomer(userId)
+        bot.send_message(Support, text=userId)
+
+
+
 
     elif message.text == "Двери":
         markup = types.InlineKeyboardMarkup(row_width=1)
@@ -69,7 +81,7 @@ def text(message):
 
 
 
-#хууууууууууууууууууй
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     if call.data == "door1":
@@ -124,9 +136,133 @@ def callback(call):
         bot.send_message(call.message.chat.id, text="Товар добавлен в корзину")
 
 
-    # elif call.data =="plusDot Aio mini" or call.data == "minusDot Aio mini":
-    #     if call.data =="plusDot Aio mini":
-    #
+    elif call.data =="plusDot Aio mini" or call.data == "minusDot Aio mini":
+        if call.data =="plusDot Aio mini":
+            userId = call.message.chat.username
+            DataBase.Plus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+        else:
+            userId = call.message.chat.username
+            DataBase.Minus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+    elif call.data =="plusDot Aio V2" or call.data == "minusDot Aio V2":
+        if call.data =="plusDot Aio V2":
+            userId = call.message.chat.username
+            DataBase.Plus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+        else:
+            userId = call.message.chat.username
+            DataBase.Minus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+    elif call.data =="plus510 длинный" or call.data == "minus510 длинный":
+        if call.data =="plus510 длинный":
+            userId = call.message.chat.username
+            DataBase.Plus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+        else:
+            userId = call.message.chat.username
+            DataBase.Minus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+    elif call.data =="plus510 стандарт" or call.data == "minus510 стандарт":
+        if call.data =="plus510 стандарт":
+            userId = call.message.chat.username
+            DataBase.Plus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+        else:
+            userId = call.message.chat.username
+            DataBase.Minus(userId, call.data)
+            Cart = DataBase.GetCart(userId)
+            bot.send_message(call.message.chat.id, "Корзина обновлена")
+            for i, (item, quantity, price) in enumerate(Cart):
+                markup = types.InlineKeyboardMarkup(row_width=2)
+                dataBack1 = f"plus{item}"
+                dataBack2 = f"minus{item}"
+                plus = types.InlineKeyboardButton("+", callback_data=dataBack1)
+                minus = types.InlineKeyboardButton("-", callback_data=dataBack2)
+                markup.add(plus, minus)
+
+                text = f"{item}\nКоличество: {quantity}\nСтоимость: {price}руб."
+                bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+
+
 
 
 bot.polling(none_stop=True)

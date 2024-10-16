@@ -2,6 +2,7 @@ from mysql.connector import connect, Error
 
 
 
+
 def CheckCustomer(userId):
     try:
         with connect(
@@ -59,41 +60,41 @@ def OrderCreator(userId, ProductName):
                     getOrderId = "select ID from orders where IDCustomer = %s"
                     cursor.execute(getOrderId, [ClientId])
                     OrderId = cursor.fetchone()[0]
-                    getCost = "select cost from products where product = %s"
-                    cursor.execute(getCost,[ProductName])
-                    Cost = cursor.fetchone()[0]
+                getCost = "select cost from products where product = %s"
+                cursor.execute(getCost,[ProductName])
+                Cost = cursor.fetchone()[0]
 
-                    getProductId = "select ID from products where product = %s"
-                    cursor.execute(getProductId, [ProductName])
-                    ProductId = cursor.fetchone()[0]
-                    check2 = "select IDProduct from compositionorders where IDProduct = %s and IDOrder = %s"
-                    cursor.execute(check2, [ProductId, OrderId])
-                    if cursor.rowcount > 0:
-                        check3 = "select Quantity from compositionorders where IDProduct = %s and IDOrder = %s"
-                        cursor.execute(check3,[ProductId, OrderId])
-                        quantity = cursor.fetchone()[0]
-                        result = quantity+1
-                        update = """
-                                    update compositionorders
-                                    set 
-                                        Quantity = "%s",
-                                        Cost = %s
-                                    where IDProduct = "%s" and IDOrder = "%s"
-                                    """
-                        cursor.execute(update,[result, Cost*result, ProductId, OrderId])
-                        connection.commit()
-                    else:
+                getProductId = "select ID from products where product = %s"
+                cursor.execute(getProductId, [ProductName])
+                ProductId = cursor.fetchone()[0]
+                check2 = "select IDProduct from compositionorders where IDProduct = %s and IDOrder = %s"
+                cursor.execute(check2, [ProductId, OrderId])
+                if cursor.rowcount > 0:
+                    check3 = "select Quantity from compositionorders where IDProduct = %s and IDOrder = %s"
+                    cursor.execute(check3,[ProductId, OrderId])
+                    quantity = cursor.fetchone()[0]
+                    result = quantity+1
+                    update = """
+                                update compositionorders
+                                set 
+                                    Quantity = "%s",
+                                    Cost = %s
+                                where IDProduct = "%s" and IDOrder = "%s"
+                                """
+                    cursor.execute(update,[result, Cost*result, ProductId, OrderId])
+                    connection.commit()
+                else:
 
 
-                        insert = """
-                                        insert into compositionorders
-                                        (IDOrder, IDProduct, Quantity, Cost)
-                                        values ( %s, %s, 1, %s )
-                                        """
-                        with connection.cursor() as cursor:
-                            cursor.execute(insert,[OrderId, ProductId, Cost])
-                        connection.commit()
-                        return True
+                    insert = """
+                                insert into compositionorders
+                                (IDOrder, IDProduct, Quantity, Cost)
+                                values ( %s, %s, 1, %s )
+                                """
+                    with connection.cursor() as cursor:
+                        cursor.execute(insert,[OrderId, ProductId, Cost])
+                    connection.commit()
+                    return True
     except Error as e:
         print(e)
         return(e)
@@ -164,12 +165,92 @@ def Plus(userId, ProductData):
                 cursor.execute(getProductId,[ProductName])
                 ProductId = cursor.fetchone()[0]
 
+                getQuantityId = "select Quantity from compositionorders where IDOrder = %s and IDProduct = %s"
+                cursor.execute(getQuantityId, [OrderId, ProductId])
+                QuantityId = cursor.fetchone()[0]
+
+                getCost = "select cost from products where product = %s"
+                cursor.execute(getCost, [ProductName])
+                Cost = cursor.fetchone()[0]
+
+                fnlQuantityId = QuantityId+1
+                fnlCost = Cost * fnlQuantityId
+
+                update = """
+                            update compositionorders
+                                    set 
+                                        Quantity = "%s",
+                                        Cost = %s
+                                    where IDOrder = "%s" and IDProduct = "%s"
+                            """
+                cursor.execute(update, [fnlQuantityId, fnlCost, OrderId, ProductId])
+                connection.commit()
+
                 return True
     except Error as e:
         print(e)
         return e
 
-Plus("Artemk4_Z","plusDot Aio mini")
+def Minus(userId, ProductData):
+    ProductName = ProductData.replace("minus", "")
+    try:
+        with connect(
+                host="localhost",
+                user="Shadow",
+                password="Evropa18",
+                database="faama"
+        ) as connection:
+            with connection.cursor(buffered=True) as cursor:
+                getClietnId = "select ID from сustomerсard where TelegramID = %s"
+                cursor.execute(getClietnId, [userId])
+                ClientId = cursor.fetchone()[0]
+
+                getOrderId = "select ID from orders where IDCustomer = %s"
+                cursor.execute(getOrderId, [ClientId])
+                OrderId = cursor.fetchone()[0]
+
+                getProductId = "select ID from products where product = %s"
+                cursor.execute(getProductId, [ProductName])
+                ProductId = cursor.fetchone()[0]
+
+                getCompositionordersId = "select ID from compositionorders where IDOrder = %s and IDProduct = %s"
+                cursor.execute(getCompositionordersId, [OrderId, ProductId])
+                CompositionordersId = cursor.fetchone()[0]
+
+                getQuantityId = "select Quantity from compositionorders where ID = %s"
+                cursor.execute(getQuantityId, [CompositionordersId])
+                QuantityId = cursor.fetchone()[0]
+
+                getCost = "select cost from products where product = %s"
+                cursor.execute(getCost, [ProductName])
+                Cost = cursor.fetchone()[0]
+
+                fnlQuantityId = QuantityId - 1
+                fnlCost = Cost * fnlQuantityId
+
+                if fnlQuantityId == 0:
+                    delete = """
+                                Delete from compositionorders 
+                                where 
+                                    ID = %s
+                                """
+                    cursor.execute(delete,[CompositionordersId])
+                else:
+
+                    update = """
+                                    update compositionorders
+                                            set 
+                                                Quantity = "%s",
+                                                Cost = %s
+                                            where ID = "%s"
+                                    """
+                    cursor.execute(update, [fnlQuantityId, fnlCost, CompositionordersId])
+                connection.commit()
+
+                return True
+    except Error as e:
+        print(e)
+        return e
 
 def FirstLastName(name):
     try:
